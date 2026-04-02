@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, useInView } from "motion/react";
-import { Mail, Building2, PenLine, BarChart3, ShieldCheck, BookOpen, Landmark, ClipboardList, Users, Check, ChevronRight, Lock, HelpCircle, Heart, Shield, TrendingUp } from "lucide-react";
+import { Mail, Building2, PenLine, BarChart3, ShieldCheck, BookOpen, Landmark, ClipboardList, Users, Check, ChevronRight, Lock, HelpCircle, Heart, Shield, TrendingUp, Menu, X, ChevronDown, Facebook } from "lucide-react";
 import { InteractiveDashboard } from "./components/InteractiveDashboard";
 import imgLogoFull from "../assets/a65d01e22650a649bffd6b81718207659fb69d94.png";
 import imgRectangle5 from "../assets/0c7863a730a70d564f7f174eadec97b8e83a5295.png";
@@ -10,6 +10,7 @@ import imgBanner2 from "../assets/6d9bc74846af2bfb75e46af2d6c0f5063f54395f.png";
 import imgBanner3 from "../assets/3868d4a7cac88c8d3b4c7322c0485c18c7b09085.png";
 import imgLogoFull1 from "../assets/195d19c3912b64142c49b51f4624398d7b2c2be9.png";
 import imgHero from "../assets/hero-image.png";
+import imgQuoteSection from "../assets/quote-section.png";
 import heroVideo from "../assets/hero-video-5.mp4";
 
 // ─── Fonts ──────────────────────────────────────────────────────────────────
@@ -52,50 +53,99 @@ function FadeUp({
 }
 
 // ─── Nav ─────────────────────────────────────────────────────────────────────
+const navLinks = [
+  { label: "Who It's For", id: "who-benefits" },
+  { label: "Features", id: "features" },
+  { label: "Pricing", id: "pricing" },
+  { label: "FAQ", id: "faq" },
+];
+
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handler);
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
+  // Close mobile menu on scroll
+  useEffect(() => {
+    if (menuOpen) setMenuOpen(false);
+  }, [scrolled]);
+
+  function handleNavLink(id: string) {
+    setMenuOpen(false);
+    scrollToSection(id);
+  }
+
   return (
     <nav
-      className={`sticky top-0 z-50 w-full flex items-center justify-between px-8 lg:px-24 h-16 transition-all duration-300 ${
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         scrolled
           ? "bg-white/98 shadow-[0_2px_20px_rgba(0,53,29,0.08)]"
           : "bg-[rgba(246,251,243,0.95)]"
       }`}
     >
-      <div className="flex items-center gap-2 shrink-0">
-        <img src={imgLogoFull} alt="StewardTrack" className="h-[28px] w-auto object-contain" />
-      </div>
-      <div
-        className="hidden md:flex items-center gap-8 text-[14px] text-[#4a5a4a] font-medium"
-        style={DM}
-      >
-        {[
-          { label: "Who It's For", id: "who-benefits" },
-          { label: "Features", id: "features" },
-          { label: "Pricing", id: "pricing" },
-          { label: "FAQ", id: "faq" },
-        ].map((link) => (
+      {/* Main bar */}
+      <div className="flex items-center justify-between px-8 lg:px-24 h-16">
+        <div className="flex items-center gap-2 shrink-0">
+          <img src={imgLogoFull} alt="StewardTrack" className="h-[28px] w-auto object-contain" />
+        </div>
+
+        {/* Desktop links */}
+        <div
+          className="hidden md:flex items-center gap-8 text-[14px] text-[#4a5a4a] font-medium"
+          style={DM}
+        >
+          {navLinks.map((link) => (
+            <button
+              key={link.label}
+              onClick={() => scrollToSection(link.id)}
+              className="hover:text-[#1a6640] transition-colors duration-200 cursor-pointer bg-transparent border-none"
+            >
+              {link.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Hamburger — mobile only */}
           <button
-            key={link.label}
-            onClick={() => scrollToSection(link.id)}
-            className="hover:text-[#1a6640] transition-colors duration-200 cursor-pointer bg-transparent border-none"
+            className="md:hidden flex items-center justify-center size-9 rounded-full hover:bg-[#eaf3e5] transition-colors duration-200 cursor-pointer text-[#1a6640]"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
           >
-            {link.label}
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
-        ))}
+
+          <button
+            className="bg-[#00351d] text-white text-[14px] font-bold px-6 py-2.5 rounded-full hover:bg-[#1a6640] transition-colors duration-200 cursor-pointer"
+            style={U}
+          >
+            Try Free
+          </button>
+        </div>
       </div>
-      <button
-        className="bg-[#00351d] text-white text-[14px] font-bold px-6 py-2.5 rounded-full hover:bg-[#1a6640] transition-colors duration-200 cursor-pointer"
-        style={U}
-      >
-        Try Free
-      </button>
+
+      {/* Mobile dropdown */}
+      {menuOpen && (
+        <div
+          className="md:hidden border-t border-[rgba(0,53,29,0.08)] bg-white/98 px-8 py-3 flex flex-col gap-1"
+          style={DM}
+        >
+          {navLinks.map((link) => (
+            <button
+              key={link.label}
+              onClick={() => handleNavLink(link.id)}
+              className="text-left text-[15px] text-[#4a5a4a] font-medium py-3 border-b border-[rgba(0,53,29,0.06)] last:border-0 hover:text-[#1a6640] transition-colors duration-200 cursor-pointer bg-transparent w-full"
+            >
+              {link.label}
+            </button>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }
@@ -310,9 +360,9 @@ function WhoBenefits() {
           </p>
         </FadeUp>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 w-full items-stretch">
           {whoCards.map((card, i) => (
-            <FadeUp key={card.title} delay={i * 0.08}>
+            <FadeUp key={card.title} delay={i * 0.08} className="h-full">
               <motion.div
                 whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.12)" }}
                 transition={{ duration: 0.2 }}
@@ -549,17 +599,17 @@ function PlatformModules() {
           </p>
         </FadeUp>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 w-full items-stretch">
           {modules.map((mod, i) => (
-            <FadeUp key={mod.title + i} delay={i * 0.08}>
+            <FadeUp key={mod.title + i} delay={i * 0.08} className="h-full">
               <motion.div
-                whileHover={{ y: -6, boxShadow: "0 16px 48px rgba(0,51,26,0.12)" }}
+                whileHover={{ y: -6 }}
                 transition={{ duration: 0.22 }}
-                className="bg-white rounded-[20px] shadow-[0_4px_24px_rgba(0,51,26,0.06)] overflow-hidden flex flex-col"
+                className="flex flex-col h-full"
               >
-                {/* Banner */}
+                {/* Full-bleed photo — all corners rounded */}
                 <div
-                  className="h-[140px] flex items-center justify-center relative overflow-hidden"
+                  className="h-[200px] relative overflow-hidden rounded-[20px] shrink-0"
                   style={{ backgroundColor: mod.bg }}
                 >
                   <img
@@ -567,28 +617,27 @@ function PlatformModules() {
                     alt=""
                     className="absolute inset-0 w-full h-full object-cover"
                   />
-                  {/* Color tint overlay — ensures white text is readable over bright photos */}
                   <div
                     className="absolute inset-0"
-                    style={{ backgroundColor: mod.bg, opacity: 0.68 }}
+                    style={{ backgroundColor: mod.bg, opacity: 0.62 }}
                   />
-                  <div className="relative flex items-center gap-2">
-                    <span
-                      className="text-[rgba(255,255,255,0.15)] font-extrabold text-[56px] select-none"
-                      style={U}
-                    >
-                      {mod.letter}
-                    </span>
-                    <span className="text-white font-bold text-[20px]" style={U}>
-                      {mod.title}
-                    </span>
-                  </div>
+                  {/* Watermark letter — top-right texture */}
+                  <span
+                    className="absolute -top-2 -right-2 font-extrabold select-none pointer-events-none leading-none"
+                    style={{ ...U, fontSize: 100, color: "rgba(255,255,255,0.09)" }}
+                  >
+                    {mod.letter}
+                  </span>
                 </div>
 
-                {/* Body */}
-                <div className="p-5 flex flex-col gap-3 flex-1">
-                  <span
-                    className="text-[10px] font-bold px-2.5 py-1 rounded-full self-start"
+                {/* Floating content card — overlaps photo */}
+                <div className="relative -mt-10 bg-white rounded-[16px] shadow-[0_8px_32px_rgba(0,51,26,0.13)] px-5 pb-6 pt-5 flex flex-col gap-3 flex-1 z-10">
+                  <p className="text-[#181d18] font-extrabold text-[17px] leading-tight" style={U}>
+                    {mod.title}
+                  </p>
+                  <button
+                    onClick={() => scrollToSection("pricing")}
+                    className="flex items-center gap-1 text-[11px] font-bold px-3 py-1 rounded-full self-start cursor-pointer hover:opacity-80 transition-opacity duration-150"
                     style={{
                       color: mod.tierColor,
                       backgroundColor: mod.tierBg,
@@ -596,15 +645,22 @@ function PlatformModules() {
                     }}
                   >
                     {mod.tier}
-                  </span>
-                  <p className="text-[#4a5a4a] text-[12px] leading-[18px]" style={DM}>
+                    <ChevronDown size={10} />
+                  </button>
+                  <p
+                    className="text-[13px] leading-[21px]"
+                    style={{ ...DM, color: "#4a5a4a" }}
+                  >
                     {mod.desc}
                   </p>
-                  <div className="flex flex-col gap-1.5">
+                  <div className="flex flex-col gap-2 flex-1">
                     {mod.feats.map((f) => (
-                      <div key={f} className="flex items-center gap-2">
-                        <Check size={12} className="text-[#1a6640] shrink-0 mt-[1px]" />
-                        <p className="text-[#4a5a4a] text-[11px]" style={DM}>
+                      <div key={f} className="flex items-start gap-2">
+                        <Check size={13} className="text-[#1a6640] shrink-0 mt-[2px]" />
+                        <p
+                          className="text-[13px] leading-[20px]"
+                          style={{ ...DM, color: "#4a5a4a" }}
+                        >
                           {f}
                         </p>
                       </div>
@@ -616,6 +672,64 @@ function PlatformModules() {
           ))}
         </div>
       </div>
+    </section>
+  );
+}
+
+// ─── Cinematic Banner ─────────────────────────────────────────────────────────
+function CinematicSection() {
+  return (
+    <section className="relative w-full min-h-[480px] lg:min-h-[560px] flex items-center overflow-hidden">
+      {/* Background image */}
+      <img
+        src={imgQuoteSection}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover object-center"
+      />
+      {/* Left-to-right green gradient overlay — matches hero */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to right, #00351d 28%, rgba(0,53,29,0.85) 45%, rgba(0,53,29,0.2) 62%, transparent 78%)",
+        }}
+      />
+      {/* Gold accent line top */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[3px]"
+        style={{ background: "linear-gradient(to right, transparent, #b8973a, transparent)" }}
+      />
+      {/* Content — left aligned */}
+      <div className="relative w-full max-w-[1200px] mx-auto px-8 lg:px-24 py-20">
+        <FadeUp className="max-w-[560px]">
+          <p
+            className="text-[#d4af55] text-[11px] font-bold mb-8 tracking-[0.12em] uppercase"
+            style={U}
+          >
+            — The Heart Behind the Tool
+          </p>
+          <blockquote
+            className="text-white font-extrabold text-[26px] lg:text-[44px] leading-[1.2] tracking-[-0.4px] lg:tracking-[-0.8px] mb-8"
+            style={U}
+          >
+            "Behind every notebook is someone who showed up every Sunday,
+            recorded every peso, and never asked for recognition."
+          </blockquote>
+          <div className="w-12 h-[2px] bg-[#b8973a] mb-6 rounded-full" />
+          <p
+            className="text-[rgba(255,255,255,0.65)] text-[15px] lg:text-[17px] leading-[28px]"
+            style={DM}
+          >
+            StewardTrack is built for them.
+          </p>
+        </FadeUp>
+      </div>
+      {/* Gold accent line bottom */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[3px]"
+        style={{ background: "linear-gradient(to right, transparent, #b8973a, transparent)" }}
+      />
     </section>
   );
 }
@@ -760,25 +874,16 @@ function Testimonials() {
           </h2>
         </FadeUp>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full items-stretch">
           {testimonials.map((t, i) => (
-            <FadeUp key={t.name} delay={i * 0.1}>
+            <FadeUp key={t.name} delay={i * 0.1} className="h-full">
               <motion.div
                 whileHover={{ y: -5, boxShadow: "0 16px 40px rgba(0,51,26,0.1)" }}
                 transition={{ duration: 0.2 }}
-                className="bg-white rounded-[20px] shadow-[0_4px_20px_rgba(0,51,26,0.06)] p-7 flex flex-col gap-3"
+                className="bg-white rounded-[20px] shadow-[0_4px_20px_rgba(0,51,26,0.06)] p-7 flex flex-col gap-3 h-full"
               >
-                <p className="text-[#b8973a] text-[14px]">★★★★★</p>
-                <p className="text-[#b8973a] font-extrabold text-[48px] leading-none" style={U}>
-                  "
-                </p>
-                <p
-                  className="text-[#181d18] text-[13px] leading-[21px] flex-1"
-                  style={DM}
-                >
-                  {t.quote}
-                </p>
-                <div className="flex items-center gap-3 pt-2">
+                {/* Person first — grounds the quote immediately */}
+                <div className="flex items-center gap-3">
                   <div
                     className="size-[38px] rounded-full flex items-center justify-center text-white text-[14px] font-bold shrink-0"
                     style={{ backgroundColor: t.color, ...U }}
@@ -794,6 +899,13 @@ function Testimonials() {
                     </p>
                   </div>
                 </div>
+                <p className="text-[#b8973a] text-[14px]">★★★★★</p>
+                <p
+                  className="text-[#181d18] text-[13px] leading-[21px] flex-1"
+                  style={DM}
+                >
+                  <span className="text-[#b8973a] font-extrabold text-[18px] leading-none mr-0.5" style={U}>"</span>{t.quote}<span className="text-[#b8973a] font-extrabold text-[18px] leading-none ml-0.5" style={U}>"</span>
+                </p>
               </motion.div>
             </FadeUp>
           ))}
@@ -881,7 +993,7 @@ const plans = [
       "Custom integrations",
       "Priority support",
     ],
-    cta: "Start Free Trial",
+    cta: "Talk to Us",
     ctaStyle: "border border-[rgba(0,53,29,0.22)] text-[#00351d] hover:bg-[#d0ebd8]",
     badge: undefined as string | undefined,
   },
@@ -935,9 +1047,9 @@ function Pricing() {
           </div>
         </FadeUp>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full items-stretch">
           {plans.map((plan, i) => (
-            <FadeUp key={plan.name} delay={i * 0.07}>
+            <FadeUp key={plan.name} delay={i * 0.07} className="h-full">
               <motion.div
                 whileHover={plan.featured ? {} : { y: -4, boxShadow: "0 16px 48px rgba(0,51,26,0.12)" }}
                 transition={{ duration: 0.2 }}
@@ -1084,24 +1196,24 @@ function TrustSection() {
             — Your Concerns, Answered
           </p>
           <h2
-            className="text-[#00351d] font-extrabold text-[28px] lg:text-[40px] tracking-[-0.4px] lg:tracking-[-0.6px] leading-[1.2]"
+            className="text-[#1a6640] font-extrabold text-[28px] lg:text-[40px] tracking-[-0.4px] lg:tracking-[-0.6px] leading-[1.2]"
             style={U}
           >
             Your Deepest Fears, Directly Addressed
           </h2>
         </FadeUp>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full items-stretch">
           {fears.map((fear, i) => (
             <FadeUp
               key={fear.title}
               delay={i * 0.07}
-              className={i === fears.length - 1 && fears.length % 3 === 1 ? "lg:col-start-2" : ""}
+              className={i === fears.length - 1 && fears.length % 3 === 1 ? "lg:col-start-2 h-full" : "h-full"}
             >
               <motion.div
                 whileHover={{ y: -4, boxShadow: "0 12px 36px rgba(0,51,26,0.1)" }}
                 transition={{ duration: 0.2 }}
-                className="bg-white rounded-[20px] shadow-[0_2px_12px_rgba(0,51,26,0.05)] p-6 flex flex-col gap-3"
+                className="bg-white rounded-[20px] shadow-[0_2px_12px_rgba(0,51,26,0.05)] p-6 flex flex-col gap-3 h-full"
               >
                 <div className="bg-[#e8f4ed] rounded-[10px] size-11 flex items-center justify-center">
                   <fear.icon size={20} className="text-[#1a6640]" />
@@ -1168,17 +1280,32 @@ function FinalCta() {
 // ─── Footer ───────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="bg-[#0c2115] w-full px-8 lg:px-24 h-16 flex items-center justify-between">
+    <footer className="bg-[#0c2115] w-full px-8 lg:px-24 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
       <img src={imgLogoFull1} alt="StewardTrack" className="h-5 w-auto object-contain" />
-      <p className="text-[rgba(255,255,255,0.38)] text-[12px]" style={DM}>
+
+      <p className="text-[rgba(255,255,255,0.55)] text-[12px] order-last sm:order-none" style={DM}>
         © 2026 StewardTrack. All rights reserved.
       </p>
-      <div className="flex gap-6 text-[rgba(255,255,255,0.38)] text-[12px]" style={DM}>
-        {["docs.stewardtrack.com", "Privacy", "Terms"].map((l) => (
-          <a key={l} href="#" className="hover:text-white transition-colors duration-200">
-            {l}
+
+      <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-[rgba(255,255,255,0.55)] text-[12px]" style={DM}>
+        {[
+          { label: "Docs", href: "https://docs.stewardtrack.com" },
+          { label: "About", href: "#" },
+          { label: "Contact", href: "mailto:hello@stewardtrack.com" },
+          { label: "Privacy", href: "#" },
+          { label: "Terms", href: "#" },
+        ].map((l) => (
+          <a key={l.label} href={l.href} className="hover:text-white transition-colors duration-200">
+            {l.label}
           </a>
         ))}
+        <a
+          href="https://facebook.com/stewardtrack"
+          aria-label="StewardTrack on Facebook"
+          className="hover:text-white transition-colors duration-200 flex items-center"
+        >
+          <Facebook size={13} />
+        </a>
       </div>
     </footer>
   );
@@ -1195,6 +1322,7 @@ export default function App() {
       <DashboardShowcase />
       <PlatformModules />
       <HowItWorks />
+      <CinematicSection />
       <Testimonials />
       <Pricing />
       <TrustSection />

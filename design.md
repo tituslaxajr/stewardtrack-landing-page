@@ -56,7 +56,7 @@ StewardTrack is a church management SaaS platform built for Filipino churches. T
 
 | Token | Hex | Usage |
 |---|---|---|
-| `danger` | `#c0392b` | Pain point number badges, "FEAR" labels in Trust section |
+| `danger` | `#c0392b` | "FEAR" labels in Trust section |
 | `live-green` | `#28c840` | Live data pulsing indicator dot |
 | `macOS-red` | `#ff5f57` | Dashboard window chrome dot |
 | `macOS-yellow` | `#febc2e` | Dashboard window chrome dot |
@@ -98,7 +98,7 @@ StewardTrack is a church management SaaS platform built for Filipino churches. T
 
 | Role | Size | Weight | Font | Color |
 |---|---|---|---|---|
-| Hero headline | `48–56px` | `extrabold (800)` | Urbanist | `#1a6640` |
+| Hero headline | `48–56px` | `extrabold (800)` | Urbanist | `white` (on dark video background) |
 | Section h2 | `40px` | `extrabold (800)` | Urbanist | `#1a6640` / `white` |
 | Final CTA h2 | `48–52px` | `extrabold (800)` | Urbanist | `white` |
 | Eyebrow label | `12px` | `bold (700)` | Urbanist | `#b8973a` / `#d4af55` |
@@ -130,7 +130,7 @@ StewardTrack is a church management SaaS platform built for Filipino churches. T
 
 ### Page Container
 
-- **Max width:** `1200px` (`max-w-[1200px]`) for most sections; `1000px` for Pricing; `1440px` for Hero
+- **Max width:** `1200px` (`max-w-[1200px]`) for all sections including Pricing; `1440px` for Hero
 - **Horizontal padding:** `px-8` (mobile) → `lg:px-24` (desktop)
 - **Section vertical padding:** `py-20` standard; `py-24` for Final CTA
 
@@ -148,7 +148,7 @@ StewardTrack is a church management SaaS platform built for Filipino churches. T
 | Platform Modules | `lg:grid-cols-4` |
 | How It Works steps | `lg:grid-cols-4` |
 | Testimonials | `md:grid-cols-3` |
-| Pricing | `md:grid-cols-3` |
+| Pricing | `sm:grid-cols-2 lg:grid-cols-4` (4 plans) |
 | Trust/Fears | `lg:grid-cols-3` |
 | Pain Points | Two-column flex (card + copy) on `lg` |
 
@@ -219,16 +219,33 @@ Used in: Nav CTA, Pain Points CTA
 bg-[#1a6640] text-white font-bold px-7 py-3.5 rounded-full
 hover:bg-[#00351d] shadow-[0_8px_30px_rgba(26,102,64,0.3)]
 ```
-Used in: Hero primary CTA
+Used in: (reserved — not currently used in hero)
 
-### Secondary (Outlined)
+### Hero Primary CTA (Gold on Dark)
+
+```
+bg-[#d4af55] text-[#00351d] font-bold px-7 py-3.5 rounded-full
+hover:bg-[#f5ecd0] shadow-[0_8px_30px_rgba(0,0,0,0.25)]
+```
+Used in: Hero primary CTA ("Try StewardTrack Free") — gold button on the dark video overlay background
+
+### Hero Secondary CTA (Outlined White)
+
+```
+text-white font-bold px-7 py-3.5 rounded-full
+border-[1.5px] border-[rgba(255,255,255,0.4)]
+hover:bg-[rgba(255,255,255,0.1)] transition-colors duration-200
+```
+Used in: Hero secondary CTA ("See how it works") — sits on dark gradient
+
+### Secondary (Outlined Green)
 
 ```
 text-[#00351d] font-bold px-7 py-3.5 rounded-full
 border-[1.5px] border-[rgba(0,53,29,0.22)] bg-white
 hover:bg-[#f0faf0] transition-colors duration-200
 ```
-Used in: Hero secondary CTA ("See how it works"), Essential pricing CTA
+Used in: Essential pricing CTA
 
 ### Gold Accent
 
@@ -255,7 +272,7 @@ Used in: Essential and Professional pricing cards
 | Page root | `#f6fbf3` (sage-50) |
 | Nav (default) | `rgba(246,251,243,0.95)` |
 | Nav (scrolled) | `rgba(255,255,255,0.98)` |
-| Hero | `#f6fbf3` |
+| Hero | Background video (`hero-video-5.mp4`) + gradient overlay: `linear-gradient(to right, #00351d 28%, rgba(0,53,29,0.85) 45%, rgba(0,53,29,0.2) 62%, transparent 78%)` |
 | Who Benefits | Gradient dark-to-green |
 | Pain Points | `#eaf3e5` |
 | Platform Modules | `#f6fbf3` |
@@ -299,6 +316,8 @@ Used on: All section headings, card grids (with staggered delay `i * 0.07–0.1`
 | Body copy | `{opacity:0, y:20}` | `{opacity:1, y:0}` | 0.6s | 0.3s |
 | CTA buttons | `{opacity:0, y:16}` | `{opacity:1, y:0}` | 0.5s | 0.4s |
 | Stats row | `{opacity:0}` | `{opacity:1}` | 0.6s | 0.55s |
+
+> The Hero also has a **mouse-following radial glow**: on `mouseenter`, a `radial-gradient(circle 520px at {x}px {y}px, rgba(212,175,85,0.18), rgba(0,155,85,0.07), transparent)` tracks the cursor. Opacity fades in/out on enter/leave (`transition: opacity 0.5s ease`).
 
 ### Dashboard Entry Animation
 
@@ -377,11 +396,32 @@ transition: { repeat: Infinity, duration: 1.4, ease: "easeInOut" }
 
 ### Tabs
 
-| Tab | Title | KPI 1 | KPI 2 | Bar Section |
+All tabs share 3 KPIs, a bar chart section (or custom content), and a chip row. The active tab is driven by clicking sidebar items.
+
+| Tab key | Sidebar Section | Sidebar Item | Title | Custom Content |
 |---|---|---|---|---|
-| `overview` | Treasury Overview | Total Giving | Active Members | Ministry Budgets |
-| `giving` | Giving Trends | This Month | Avg per Member | Monthly Giving Trend |
-| `members` | Member Overview | Total Members | Attendance Rate | Membership Status |
+| `general-overview` | GENERAL | Overview | Church Overview | — |
+| `profile` | GENERAL | My Profile | My Profile | — |
+| `reports` | COMMUNITY | Reports | Community Reports | — |
+| `families` | COMMUNITY | Families | Families | — |
+| `events` | PLANNING | Events | Events | — |
+| `schedules` | PLANNING | Schedules | Schedules | — |
+| `overview` | STEWARDSHIP | Treasury Overview | Treasury Overview | — |
+| `giving` | STEWARDSHIP | Financial Records | Financial Records | `FinancialAreaChart` replaces bar chart |
+| `ministry-budgets` | STEWARDSHIP | Ministry Budgets | Ministry Budgets | — |
+| `members` | COMMUNITY | Dashboard | Dashboard | `MemberListContent` replaces bar chart |
+| `settings` | SETTINGS | Settings | Settings | — |
+| `audit-log` | ADMINISTRATION | Audit Log | Audit Log | — |
+
+### Sidebar Navigation
+
+```
+COMMUNITY   → Dashboard, Families
+STEWARDSHIP → Treasury Overview, Financial Records, Ministry Budgets
+SETTINGS    → Settings
+```
+
+Active sidebar item highlights with `bg-[#eaf3e5] text-[#1a6640] font-semibold`. Inactive items are `text-[#4a5a4a]`.
 
 ### Internal Structure
 
@@ -389,10 +429,12 @@ transition: { repeat: Infinity, duration: 1.4, ease: "easeInOut" }
 motion.div (entry animation wrapper)
   └─ div (3D tilt wrapper)
       ├─ div (radial glow — pointer-events-none)
-      ├─ div (macOS topbar: 3 dots + title + tab switcher)
-      ├─ AnimatePresence → 2× KPICard
-      ├─ AnimatePresence → bar chart section with 3 BarRows
-      ├─ AnimatePresence → chip row
+      ├─ div (macOS topbar: 3 dots + title)
+      ├─ div (sidebar) + div (main content area)
+      │     ├─ AnimatePresence → title + subtitle
+      │     ├─ AnimatePresence → 3× KPICard
+      │     ├─ AnimatePresence → bar chart / FinancialAreaChart / MemberListContent
+      │     └─ AnimatePresence → chip row
       └─ AnimatePresence → live indicator (visible on hover)
 ```
 
@@ -441,10 +483,10 @@ Nav scroll offset: `64px` (nav height) subtracted from `getBoundingClientRect().
 /src/app/App.tsx
   ├─ FadeUp (scroll animation wrapper)
   ├─ Nav
-  ├─ Hero
-  │   └─ InteractiveDashboard (imported)
+  ├─ Hero                  ← background video + gradient overlay; no dashboard here
   ├─ WhoBenefits
   ├─ PainPoints
+  ├─ DashboardShowcase     ← standalone section; houses InteractiveDashboard
   ├─ PlatformModules
   ├─ HowItWorks
   ├─ Testimonials
@@ -454,6 +496,8 @@ Nav scroll offset: `64px` (nav height) subtracted from `getBoundingClientRect().
   └─ Footer
 
 /src/app/components/InteractiveDashboard.tsx
+  ├─ FinancialAreaChart    ← SVG area chart, shown on "giving" (Financial Records) tab
+  ├─ MemberListContent     ← animated member table, shown on "members" tab
   ├─ KPICard
   └─ BarRow
 ```
@@ -464,13 +508,28 @@ Nav scroll offset: `64px` (nav height) subtracted from `getBoundingClientRect().
 
 | Asset | File | Used In |
 |---|---|---|
-| Logo (nav) | `figma:asset/a65d01e...` | Nav |
-| Logo (footer) | `figma:asset/195d19c...` | Footer |
-| Hero background shape | `figma:asset/0c7863a...` | (imported, currently not rendered) |
-| Community banner | `figma:asset/05796020...` | Platform Module card |
-| Stewardship banner | `figma:asset/3d6d946...` | Platform Module card |
-| Planning banner | `figma:asset/6d9bc748...` | Platform Module card |
-| Communication banner | `figma:asset/3868d4a7...` | Platform Module card |
+| Logo (nav) | `src/assets/a65d01e...png` | Nav |
+| Logo (footer) | `src/assets/195d19c...png` | Footer |
+| Hero background video | `src/assets/hero-video-5.mp4` | Hero — looping, muted, `objectPosition: "80% center"` |
+| Hero background image | `src/assets/hero-image.png` | (imported, currently unused — superseded by video) |
+| Hero background shape | `src/assets/0c7863a...png` | (imported, currently not rendered) |
+| Community banner | `src/assets/05796020...png` | Platform Module card |
+| Stewardship banner | `src/assets/3d6d946...png` | Platform Module card |
+| Planning banner | `src/assets/6d9bc748...png` | Platform Module card |
+| Communication banner | `src/assets/3868d4a7...png` | Platform Module card |
+
+---
+
+## Pricing Plan Names
+
+Plans use Filipino names that align with the ministry context:
+
+| Plan key | Filipino name | English subtitle | Best for |
+|---|---|---|---|
+| Free | Mananampalataya | Perfect Start | Small churches (≤25 members) |
+| Mid | Lingkod | Growing Together | Growing congregations (≤35 members) |
+| Featured | Katiwala | Full Power | Established churches (≤150 members) |
+| Enterprise | Tagapangasiwa | Scale Without Limits | Large & multi-campus (unlimited) |
 
 ---
 
