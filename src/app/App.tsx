@@ -21,9 +21,7 @@ const DM = { fontFamily: "DM Sans, sans-serif" } as const;
 function scrollToSection(id: string) {
   const element = document.getElementById(id);
   if (element) {
-    const navHeight = 64;
-    const offsetPosition = element.getBoundingClientRect().top + window.scrollY - navHeight;
-    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
 
@@ -38,7 +36,7 @@ function FadeUp({
   className?: string;
 }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const inView = useInView(ref, { once: true, margin: "0px" });
   return (
     <motion.div
       ref={ref}
@@ -89,7 +87,7 @@ function Nav() {
       }`}
     >
       {/* Main bar */}
-      <div className="flex items-center justify-between px-8 lg:px-24 h-16">
+      <div className="flex items-center justify-between px-6 sm:px-10 lg:px-16 xl:px-24 h-16">
         <div className="flex items-center gap-2 shrink-0">
           <img src={imgLogoFull} alt="StewardTrack" className="h-[28px] w-auto object-contain" />
         </div>
@@ -176,7 +174,7 @@ function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden min-h-[680px] lg:min-h-[800px]"
+      className="relative w-full overflow-hidden snap-section flex items-end lg:items-center"
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -214,7 +212,7 @@ function Hero() {
       />
 
       {/* Content — left-aligned, sits on top of gradient */}
-      <div className="relative w-full max-w-[1440px] mx-auto px-5 lg:px-24 pt-12 pb-14 lg:pt-24 lg:pb-28">
+      <div className="relative w-full max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-24 py-16 lg:py-0">
         <div className="flex flex-col items-start max-w-[540px]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -338,7 +336,7 @@ function WhoBenefits() {
   return (
     <section
       id="who-benefits"
-      className="w-full py-14 lg:py-20 px-5 lg:px-24"
+      className="w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow"
       style={{
         background: "linear-gradient(68deg, rgb(0,53,29) 13%, rgb(0,155,85) 100%)",
       }}
@@ -425,7 +423,7 @@ const pains = [
 
 function PainPoints() {
   return (
-    <section className="bg-[#eaf3e5] w-full py-14 lg:py-20 px-5 lg:px-24">
+    <section className="bg-[#eaf3e5] w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow">
       <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-10 lg:gap-20 items-center">
         {/* Left card */}
         <FadeUp className="flex-shrink-0 w-full lg:w-[560px]">
@@ -488,7 +486,7 @@ function PainPoints() {
 // ─── Dashboard Showcase ───────────────────────────────────────────────────────
 function DashboardShowcase() {
   return (
-    <section className="bg-[#f6fbf3] w-full py-14 lg:py-20 px-5 lg:px-24">
+    <section className="bg-[#f6fbf3] w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow">
       <div className="max-w-[1200px] mx-auto flex flex-col items-center">
         <FadeUp className="text-center mb-10 lg:mb-14">
           <p className="text-[#b8973a] text-[12px] font-bold mb-3" style={U}>
@@ -582,7 +580,7 @@ const modules = [
 
 function PlatformModules() {
   return (
-    <section id="features" className="bg-[#f6fbf3] w-full py-14 lg:py-20 px-5 lg:px-24">
+    <section id="features" className="bg-[#f6fbf3] w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow">
       <div className="max-w-[1200px] mx-auto flex flex-col gap-12 items-center">
         <FadeUp className="text-center">
           <p className="text-[#b8973a] text-[12px] font-bold mb-3" style={U}>
@@ -679,7 +677,7 @@ function PlatformModules() {
 // ─── Cinematic Banner ─────────────────────────────────────────────────────────
 function CinematicSection() {
   return (
-    <section className="relative w-full min-h-[480px] lg:min-h-[560px] flex items-center overflow-hidden">
+    <section className="relative w-full snap-section flex items-center overflow-hidden">
       {/* Background image */}
       <img
         src={imgQuoteSection}
@@ -701,7 +699,7 @@ function CinematicSection() {
         style={{ background: "linear-gradient(to right, transparent, #b8973a, transparent)" }}
       />
       {/* Content — left aligned */}
-      <div className="relative w-full max-w-[1200px] mx-auto px-8 lg:px-24 py-20">
+      <div className="relative w-full max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-24 py-20">
         <FadeUp className="max-w-[560px]">
           <p
             className="text-[#d4af55] text-[11px] font-bold mb-8 tracking-[0.12em] uppercase"
@@ -745,7 +743,7 @@ const steps = [
 function HowItWorks() {
   return (
     <section
-      className="w-full py-14 lg:py-20 px-5 lg:px-24"
+      className="w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow flex flex-col justify-center"
       style={{
         background: "linear-gradient(65deg, rgb(0,53,29) 13%, rgb(0,155,85) 103%)",
       }}
@@ -860,7 +858,7 @@ const testimonials = [
 
 function Testimonials() {
   return (
-    <section className="bg-[#eaf3e5] w-full py-14 lg:py-20 px-5 lg:px-24">
+    <section className="bg-[#eaf3e5] w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow">
       <div className="max-w-[1200px] mx-auto flex flex-col gap-12 items-center">
         <FadeUp className="text-center">
           <p className="text-[#b8973a] text-[12px] font-bold mb-3" style={U}>
@@ -1003,7 +1001,7 @@ function Pricing() {
   const [annual, setAnnual] = useState(false);
 
   return (
-    <section id="pricing" className="bg-white w-full py-14 lg:py-20 px-5 lg:px-24">
+    <section id="pricing" className="bg-white w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow">
       <div className="max-w-[1200px] mx-auto flex flex-col gap-10 items-center">
         <FadeUp className="text-center">
           <p className="text-[#b8973a] text-[12px] font-bold mb-3" style={U}>
@@ -1189,7 +1187,7 @@ const fears = [
 
 function TrustSection() {
   return (
-    <section id="faq" className="bg-[#eaf3e5] w-full py-14 lg:py-20 px-5 lg:px-24">
+    <section id="faq" className="bg-[#eaf3e5] w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow">
       <div className="max-w-[1200px] mx-auto flex flex-col gap-12 items-center">
         <FadeUp className="text-center">
           <p className="text-[#b8973a] text-[12px] font-bold mb-3" style={U}>
@@ -1237,7 +1235,7 @@ function TrustSection() {
 function FinalCta() {
   return (
     <section
-      className="w-full py-16 lg:py-24 px-5 lg:px-24 flex flex-col items-center text-center"
+      className="w-full py-16 lg:py-24 px-6 sm:px-10 lg:px-16 xl:px-24 flex flex-col items-center justify-center text-center snap-section"
       style={{
         background: "linear-gradient(63deg, rgb(0,53,29) 13%, rgb(0,155,85) 103%)",
       }}
@@ -1280,7 +1278,7 @@ function FinalCta() {
 // ─── Footer ───────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="bg-[#0c2115] w-full px-8 lg:px-24 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+    <footer className="bg-[#0c2115] w-full px-6 sm:px-10 lg:px-16 xl:px-24 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 snap-section-overflow">
       <img src={imgLogoFull1} alt="StewardTrack" className="h-5 w-auto object-contain" />
 
       <p className="text-[rgba(255,255,255,0.55)] text-[12px] order-last sm:order-none" style={DM}>
@@ -1314,7 +1312,7 @@ function Footer() {
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
   return (
-    <div className="min-h-screen bg-[#f6fbf3] overflow-x-hidden">
+    <div className="min-h-screen bg-[#f6fbf3]">
       <Nav />
       <Hero />
       <WhoBenefits />

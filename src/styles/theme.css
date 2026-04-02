@@ -126,6 +126,7 @@
 
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
   }
 
   /**
@@ -135,6 +136,8 @@
 
   html {
     font-size: var(--font-size);
+    scroll-snap-type: y proximity;
+    scroll-padding-top: 64px; /* offset for sticky nav h-16 */
   }
 
   h1 {
@@ -177,5 +180,21 @@
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
+  }
+}
+
+@layer utilities {
+  /* Full-screen sections: fills viewport, content centered vertically */
+  .snap-section {
+    scroll-snap-align: start;
+    min-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Content-driven sections: natural height, snap point at top only */
+  .snap-section-overflow {
+    scroll-snap-align: start;
   }
 }
