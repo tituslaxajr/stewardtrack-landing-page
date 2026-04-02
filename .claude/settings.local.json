@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm install:*)",
+      "Bash(curl -s http://localhost:5173/src/imports/StewardTrackLandingPage.tsx)",
+      "Bash(curl -s -I \"http://localhost:5173/src/assets/a65d01e22650a649bffd6b81718207659fb69d94.png\")",
+      "Bash(curl -s \"http://localhost:5173/src/assets/a65d01e22650a649bffd6b81718207659fb69d94.png?import\")",
+      "Bash(npx tsc:*)",
+      "Bash(node_modules.bintsc --noEmit)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(curl -s http://localhost:5173/src/app/App.tsx)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/src/app/App.tsx)"
+    ]
+  }
+}
