@@ -1354,7 +1354,7 @@ const fears = [
   {
     icon: HelpCircle,
     title: "What if I don't understand how to use it?",
-    ans: "We speak Filipino with no tech jargon. Simple, straightforward interface. Plus, our Filipino support team has walked hundreds of churches through setup and daily use.",
+    ans: "We speak Filipino with no tech jargon. Built by people who understand church finance, not just engineers. You'll find the interface intuitive, and our team is here to guide you every step of the way.",
   },
   {
     icon: Heart,
