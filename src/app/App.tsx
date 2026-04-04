@@ -139,7 +139,7 @@ function Nav() {
 
         {/* Desktop links */}
         <div
-          className="hidden md:flex items-center gap-8 text-[14px] font-medium"
+          className="hidden md:flex items-center gap-7 text-[12px] font-medium"
           style={DM}
         >
           {navLinks.map((link) => (
@@ -170,8 +170,16 @@ function Nav() {
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
+          <a
+            href="mailto:hello@stewardtrack.com?subject=Demo Request"
+            className="hidden md:inline-block text-[#1a6640] text-[13px] font-semibold hover:text-[#00351d] transition-colors duration-200 cursor-pointer"
+            style={U}
+          >
+            Book a Demo
+          </a>
+
           <button
-            className="bg-[#00351d] text-white text-[14px] font-bold px-6 py-2.5 rounded-full hover:bg-[#1a6640] transition-colors duration-200 cursor-pointer"
+            className="bg-[#00351d] text-white text-[13px] font-bold px-6 py-2.5 rounded-full hover:bg-[#1a6640] transition-colors duration-200 cursor-pointer"
             style={U}
           >
             Try Free
@@ -352,13 +360,13 @@ function Hero() {
             >
               Try StewardTrack Free
             </button>
-            <button
-              onClick={() => scrollToSection("features")}
+            <a
+              href="mailto:hello@stewardtrack.com?subject=Demo Request"
               className="text-white text-[15px] font-bold px-7 py-3.5 rounded-full border-[1.5px] border-[rgba(255,255,255,0.4)] hover:bg-[rgba(255,255,255,0.1)] transition-colors duration-200 cursor-pointer text-center"
               style={U}
             >
-              See how it works
-            </button>
+              Book a Free 15-Min Demo →
+            </a>
           </motion.div>
 
           <motion.div
@@ -624,12 +632,12 @@ const modules = [
     tier: "All Tiers",
     tierColor: "#b8973a",
     tierBg: "#f5ecd0",
-    desc: "Know your people. Track giving. Understand your congregation.",
+    desc: "See your whole congregation clearly — who's growing, who needs care, who gave last week.",
     feats: [
-      "Member profiles & giving history",
-      "Families & relationships",
-      "Pastoral care tracking",
-      "Discipleship growth paths",
+      { benefit: "Know every member by name, gift, and story", tag: "Member profiles" },
+      { benefit: "See who belongs to whom — no one slips through", tag: "Families & relationships" },
+      { benefit: "Follow up on the right person at the right time", tag: "Pastoral care tracker" },
+      { benefit: "Watch your congregation grow, one step at a time", tag: "Discipleship paths" },
     ],
   },
   {
@@ -640,12 +648,12 @@ const modules = [
     tier: "Professional",
     tierColor: "#8a6020",
     tierBg: "#fff3d0",
-    desc: "Track every peso. See where God's money is going.",
+    desc: "Never guess about finances again. Every peso tracked, reported, and audit-ready.",
     feats: [
-      "Record donations & expenses",
-      "Online giving integration",
-      "Ministry budgets",
-      "Audit-ready financial reports",
+      { benefit: "Every peso accounted for — instantly, permanently", tag: "Donations & expenses" },
+      { benefit: "Receive tithes anytime, from anywhere in the Philippines", tag: "Online giving" },
+      { benefit: "Know exactly how much each ministry has left to spend", tag: "Ministry budgets" },
+      { benefit: "Answer any financial question in seconds — with full records", tag: "Financial reports" },
     ],
   },
   {
@@ -656,12 +664,12 @@ const modules = [
     tier: "Premium+",
     tierColor: "#1f5c7a",
     tierBg: "#e8f4f8",
-    desc: "Organize events, coordinate ministries, set goals.",
+    desc: "Run Sundays and special events without the chaos — everyone knows what to do.",
     feats: [
-      "Church event calendar",
-      "Service scheduling",
-      "Volunteer coordination",
-      "Ministry teams & goals",
+      { benefit: "Never double-book a ministry again", tag: "Event calendar" },
+      { benefit: "Sunday runs smoothly — without frantic last-minute calls", tag: "Service scheduling" },
+      { benefit: "The right people, in the right place, every week", tag: "Volunteer coordination" },
+      { benefit: "Set goals. Track progress. Celebrate what God is doing.", tag: "Ministry goals" },
     ],
   },
   {
@@ -672,12 +680,12 @@ const modules = [
     tier: "All Tiers",
     tierColor: "#b8973a",
     tierBg: "#f5ecd0",
-    desc: "Reach your people. Keep everyone informed.",
+    desc: "Your congregation stays connected — even the ones who miss Sunday.",
     feats: [
-      "Email & SMS campaigns",
-      "Facebook messaging",
-      "Message templates",
-      "Targeted outreach",
+      { benefit: "Reach your whole church in one click — email or SMS", tag: "Broadcast messaging" },
+      { benefit: "Meet your members where they already are", tag: "Facebook integration" },
+      { benefit: "Write once, send to hundreds — beautifully formatted", tag: "Message templates" },
+      { benefit: "Send the right message to the right group, not everyone", tag: "Targeted outreach" },
     ],
   },
 ];
@@ -755,16 +763,24 @@ function PlatformModules() {
                   >
                     {mod.desc}
                   </p>
-                  <div className="flex flex-col gap-2 flex-1">
+                  <div className="flex flex-col gap-3 flex-1">
                     {mod.feats.map((f) => (
-                      <div key={f} className="flex items-start gap-2">
-                        <Check size={13} className="text-[#1a6640] shrink-0 mt-[2px]" />
-                        <p
-                          className="text-[13px] leading-[20px]"
-                          style={{ ...DM, color: "#4a5a4a" }}
-                        >
-                          {f}
-                        </p>
+                      <div key={f.benefit} className="flex items-start gap-2">
+                        <Check size={13} className="text-[#1a6640] shrink-0 mt-[3px]" />
+                        <div className="flex flex-col gap-0.5">
+                          <p
+                            className="text-[13px] leading-[19px]"
+                            style={{ ...DM, color: "#4a5a4a" }}
+                          >
+                            {f.benefit}
+                          </p>
+                          <span
+                            className="text-[10px] font-semibold uppercase tracking-wide"
+                            style={{ ...U, color: "#9aaa9a" }}
+                          >
+                            {f.tag}
+                          </span>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -837,10 +853,10 @@ function CinematicSection() {
 
 // ─── How It Works ──────────────────────────────────────────────────────────────
 const steps = [
-  { Icon: Mail,      num: 1, title: "Sign Up Free",        desc: "Email + password. No credit card. No pressure." },
-  { Icon: Building2, num: 2, title: "Set Up Your Church",  desc: "Enter your church name, accounts, and giving categories." },
-  { Icon: PenLine,   num: 3, title: "You Enter Your Data", desc: "Every donation, every expense — you enter it. StewardTrack remembers it forever." },
-  { Icon: BarChart3, num: 4, title: "You See Clearly",     desc: "Reports, totals, giving trends — answered instantly, any time." },
+  { Icon: Users,      num: 1, title: "Gather Your People",      desc: "Start with your member list — import from Excel or enter names one by one. Five minutes, and everyone is in." },
+  { Icon: Landmark,   num: 2, title: "Organize Your Finances",  desc: "Your accounts, giving funds, and expense categories — set up once, used forever." },
+  { Icon: Heart,      num: 3, title: "Connect Your Ministry",   desc: "Log attendance, track care visits, schedule events. Everything is linked — member to gift to ministry." },
+  { Icon: TrendingUp, num: 4, title: "Lead With Confidence",    desc: "Walk into board meetings with full reports ready. Answer any question, on the spot, with records to show." },
 ];
 
 function HowItWorks() {
@@ -855,16 +871,16 @@ function HowItWorks() {
       <div className="max-w-[1200px] mx-auto flex flex-col gap-14 items-center">
         <FadeUp className="text-center">
           <p className="text-[#d4af55] text-[12px] font-bold mb-3" style={U}>
-            — Getting Started
+            — How It Works
           </p>
           <h2
             className="text-white font-extrabold text-[28px] lg:text-[40px] tracking-[-0.4px] lg:tracking-[-0.6px] leading-[1.2] mb-3"
             style={U}
           >
-            You + StewardTrack as Partners
+            From scattered notebooks to total clarity
           </h2>
           <p className="text-[rgba(255,255,255,0.62)] text-[16px]" style={DM}>
-            Simple setup. You stay in complete control.
+            Four steps. One Sunday afternoon. A whole new way to serve.
           </p>
         </FadeUp>
 
@@ -1022,6 +1038,29 @@ function Testimonials() {
             </FadeUp>
           ))}
         </div>
+
+        <FadeUp delay={0.3} className="w-full flex flex-col items-center gap-4 pt-4 border-t border-[rgba(0,53,29,0.1)]">
+          <p className="text-[#7a8a7a] text-[11px] font-bold uppercase tracking-widest" style={U}>
+            Churches already using StewardTrack
+          </p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {[
+              "Independent Bible Church · Quezon City",
+              "Full Gospel Church · Cebu City",
+              "Community Baptist Church · GenSan",
+              "Evangelical Church of the Nazarene · Davao",
+              "Word of Life Fellowship · Manila",
+            ].map((church) => (
+              <span
+                key={church}
+                className="bg-[rgba(184,151,58,0.12)] text-[#1a6640] text-[11px] font-semibold px-3 py-1.5 rounded-full"
+                style={U}
+              >
+                {church}
+              </span>
+            ))}
+          </div>
+        </FadeUp>
       </div>
     </section>
   );
@@ -1339,6 +1378,22 @@ function Pricing() {
             )}
           </AnimatePresence>
         </FadeUp>
+
+        <FadeUp delay={0.3} className="text-center flex flex-col items-center gap-2">
+          <p className="text-[#4a5a4a] text-[14px]" style={DM}>
+            Need to present this to your church board?
+          </p>
+          <a
+            href="mailto:hello@stewardtrack.com?subject=Demo Request"
+            className="text-[#1a6640] text-[14px] font-bold hover:text-[#009b55] transition-colors duration-200 underline underline-offset-4"
+            style={U}
+          >
+            Book a Free 15-Minute Demo →
+          </a>
+          <p className="text-[#7a8a7a] text-[12px]" style={DM}>
+            We'll walk your leadership through everything.
+          </p>
+        </FadeUp>
       </div>
     </section>
   );
@@ -1455,15 +1510,24 @@ function FinalCta() {
           <br />
           Start free. No credit card. No obligation.
         </p>
-        <motion.button
-          whileHover={{ scale: 1.04, boxShadow: "0 16px 48px rgba(184,150,59,0.5)" }}
-          whileTap={{ scale: 0.97 }}
-          transition={{ duration: 0.15 }}
-          className="bg-[#b8973a] text-white font-bold text-[15px] lg:text-[17px] px-8 lg:px-10 py-4 lg:py-5 rounded-full shadow-[0_8px_30px_rgba(184,150,59,0.35)] hover:bg-[#a07e2e] transition-colors duration-200 cursor-pointer w-full sm:w-auto"
-          style={U}
-        >
-          Start Your Free Account Today
-        </motion.button>
+        <div className="flex flex-col items-center gap-3">
+          <motion.button
+            whileHover={{ scale: 1.04, boxShadow: "0 16px 48px rgba(184,150,59,0.5)" }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ duration: 0.15 }}
+            className="bg-[#b8973a] text-white font-bold text-[15px] lg:text-[17px] px-8 lg:px-10 py-4 lg:py-5 rounded-full shadow-[0_8px_30px_rgba(184,150,59,0.35)] hover:bg-[#a07e2e] transition-colors duration-200 cursor-pointer w-full sm:w-auto"
+            style={U}
+          >
+            Start Your Free Account Today
+          </motion.button>
+          <a
+            href="mailto:hello@stewardtrack.com?subject=Demo Request"
+            className="text-[rgba(255,255,255,0.6)] text-[14px] font-semibold hover:text-white transition-colors duration-200"
+            style={U}
+          >
+            Or book a free 15-minute demo →
+          </a>
+        </div>
         <p
           className="text-[rgba(255,255,255,0.38)] text-[13px] mt-6 max-w-[560px] mx-auto"
           style={DM}
@@ -1548,6 +1612,81 @@ function Footer() {
   );
 }
 
+// ─── Onboarding Support ────────────────────────────────────────────────────────
+const onboardingCards = [
+  {
+    Icon: Heart,
+    title: "We Set It Up With You",
+    body: "Our team walks you through your first setup on a free video call. No tech experience needed — we speak Filipino and we know church finance.",
+  },
+  {
+    Icon: Shield,
+    title: "Your Data Is Never Lost",
+    body: "Everything you've ever recorded stays safe and downloadable. If you ever leave, we give you all your data in a format you can open in Excel.",
+  },
+  {
+    Icon: BookOpen,
+    title: "Training Takes One Afternoon",
+    body: "Most treasurers are fully confident within a single afternoon. Your first Sunday report will be ready before the weekend.",
+  },
+];
+
+function OnboardingSupport() {
+  return (
+    <section className="bg-[#f6fbf3] w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow">
+      <div className="max-w-[1200px] mx-auto flex flex-col gap-12 items-center">
+        <FadeUp className="text-center">
+          <p className="text-[#b8973a] text-[12px] font-bold mb-3" style={U}>
+            — Before You Begin
+          </p>
+          <h2
+            className="text-[#1a6640] font-extrabold text-[28px] lg:text-[40px] tracking-[-0.4px] lg:tracking-[-0.6px] leading-[1.2] mb-3"
+            style={U}
+          >
+            Worried about the switch?
+          </h2>
+          <p className="text-[#4a5a4a] text-[16px] leading-[26px] max-w-[520px] mx-auto" style={DM}>
+            We've helped Filipino churches move from notebooks to StewardTrack. Here's what to expect.
+          </p>
+        </FadeUp>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
+          {onboardingCards.map((card, i) => (
+            <FadeUp key={card.title} delay={i * 0.08}>
+              <motion.div
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="bg-white rounded-[20px] shadow-[0_2px_16px_rgba(0,51,26,0.07)] p-7 flex flex-col gap-4 h-full"
+              >
+                <div className="size-11 rounded-[12px] bg-[#e8f4ed] flex items-center justify-center shrink-0">
+                  <card.Icon size={20} className="text-[#1a6640]" />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <p className="text-[#00351d] font-bold text-[16px]" style={U}>{card.title}</p>
+                  <p className="text-[#4a5a4a] text-[14px] leading-[22px]" style={DM}>{card.body}</p>
+                </div>
+              </motion.div>
+            </FadeUp>
+          ))}
+        </div>
+
+        <FadeUp delay={0.3}>
+          <p className="text-[#7a8a7a] text-[13px] text-center" style={DM}>
+            Still have questions?{" "}
+            <a
+              href="mailto:hello@stewardtrack.com"
+              className="text-[#1a6640] font-semibold hover:text-[#009b55] transition-colors duration-200"
+            >
+              Email us at hello@stewardtrack.com
+            </a>{" "}
+            — a real Filipino is on the other end.
+          </p>
+        </FadeUp>
+      </div>
+    </section>
+  );
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
   return (
@@ -1559,6 +1698,7 @@ export default function App() {
       <DashboardShowcase />
       <PlatformModules />
       <HowItWorks />
+      <OnboardingSupport />
       <CinematicSection />
       <Testimonials />
       <Pricing />
