@@ -10,9 +10,8 @@ import imgBanner1 from "../assets/3d6d9461d8c2e4f6d161413dd436f9d4c6bfb491.png";
 import imgBanner2 from "../assets/6d9bc74846af2bfb75e46af2d6c0f5063f54395f.png";
 import imgBanner3 from "../assets/3868d4a7cac88c8d3b4c7322c0485c18c7b09085.png";
 import imgLogoFull1 from "../assets/195d19c3912b64142c49b51f4624398d7b2c2be9.png";
-import imgHero from "../assets/hero-image.png";
+import imgHero from "../assets/image-4.png";
 import imgQuoteSection from "../assets/quote-section.png";
-import heroVideo from "../assets/hero-video-5.mp4";
 
 // ─── Fonts ──────────────────────────────────────────────────────────────────
 const U = { fontFamily: "Urbanist, sans-serif" } as const;
@@ -220,16 +219,6 @@ function Nav() {
 function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
-  const [showVideo, setShowVideo] = useState(true);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    setShowVideo(!mq.matches);
-    const handler = (e: MediaQueryListEvent) => setShowVideo(!e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
-
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
     if (!glowRef.current || !sectionRef.current) return;
     const rect = sectionRef.current.getBoundingClientRect();
@@ -266,28 +255,14 @@ function Hero() {
         className="absolute bottom-0 left-0 right-0 h-[3px] z-10"
         style={{ background: "linear-gradient(to right, transparent, #b8973a, transparent)" }}
       />
-      {/* Background video — looping, woman on right */}
-      {showVideo ? (
-        <video
-          src={heroVideo}
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={imgHero}
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ objectPosition: "80% center" }}
-        />
-      ) : (
-        <img
-          src={imgHero}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ objectPosition: "80% center" }}
-        />
-      )}
+      {/* Background image */}
+      <img
+        src={imgHero}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ objectPosition: "80% center" }}
+      />
 
       {/* Green gradient overlay — solid on left, fades to transparent on right */}
       <div
@@ -295,6 +270,15 @@ function Hero() {
         style={{
           background:
             "linear-gradient(to right, #00351d 28%, rgba(0,53,29,0.85) 45%, rgba(0,53,29,0.2) 62%, transparent 78%)",
+        }}
+      />
+
+      {/* Bottom-right corner cover — hides star artifact in image */}
+      <div
+        className="absolute bottom-0 right-0 w-[35%] h-[45%] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse at bottom right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.35) 40%, transparent 70%)",
         }}
       />
 
@@ -809,7 +793,7 @@ function CinematicSection() {
       <div
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(to bottom, rgba(0,53,29,0.92), rgba(0,53,29,0.75))",
+          background: "linear-gradient(to right, rgba(0,53,29,0.95) 0%, rgba(0,53,29,0.85) 40%, rgba(0,53,29,0.45) 65%, rgba(0,53,29,0.15) 100%)",
         }}
       />
       {/* Gold accent line top */}
