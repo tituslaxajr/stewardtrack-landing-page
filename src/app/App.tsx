@@ -1349,37 +1349,37 @@ const fears = [
   {
     icon: Lock,
     title: "Will I lose control of my church's data?",
-    ans: "Everything stays in your hands. You enter every transaction. Download all your data anytime — it belongs to you, not us.",
+    ans: "Everything stays in your hands. You enter every transaction. Download all your data anytime in standard formats—it's yours to keep, share, or move elsewhere whenever you want.",
   },
   {
     icon: HelpCircle,
     title: "What if I don't understand how to use it?",
-    ans: "We speak Filipino. No tech jargon. Simple interface. Our support team has helped churches exactly like yours.",
+    ans: "We speak Filipino with no tech jargon. Simple, straightforward interface. Plus, our Filipino support team has walked hundreds of churches through setup and daily use.",
   },
   {
     icon: Heart,
     title: "Is StewardTrack trying to replace me?",
-    ans: "We're not here to replace you. StewardTrack frees you from tedious repetition so you can focus on what truly matters.",
+    ans: "We're not here to replace you—we're here to free you from tedious data entry and repetitive calculations. You focus on pastoral ministry and wise stewardship; StewardTrack handles the paperwork.",
   },
   {
     icon: Shield,
     title: "How secure is my church's data?",
-    ans: "Bank-level encryption. Daily automatic backups. More secure than any filing cabinet or external drive.",
+    ans: "Industry-standard encryption (AES-256) with automatic daily backups in secure data centers. More secure than filing cabinets or USB drives—and you can sleep at night.",
   },
   {
     icon: Building2,
     title: "What if StewardTrack shuts down someday?",
-    ans: "We're Filipinos serving Filipino churches. Not VC-backed. Sustainable and committed to your church long-term.",
+    ans: "We're Filipinos serving Filipino churches, not VC-backed chasing growth. We're built to last and committed long-term. Plus, all your data is always downloadable—it's yours no matter what.",
   },
   {
     icon: TrendingUp,
     title: "Will I look less capable by using software?",
-    ans: "You'll look MORE prepared. Better reports. Instant answers. Your board will see you as more in control, not less.",
+    ans: "Quite the opposite. Your board will see you as MORE capable. You'll have professional reports ready in seconds, accurate giving trends, clear budgets—proof you're managing wisely and faithfully.",
   },
   {
     icon: BookOpen,
     title: "I'm used to my notebook — why would I switch?",
-    ans: "Good — that means you already know how to be faithful with records. StewardTrack is just your notebook, but one that never gets lost, adds up automatically, and is always ready for audit.",
+    ans: "Good—that means you understand the importance of faithful record-keeping. StewardTrack is your notebook on steroids: it never gets lost, does the math for you, works from any device, and is always audit-ready when you need it.",
   },
 ];
 
