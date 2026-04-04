@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, useInView } from "motion/react";
-import { Mail, Building2, PenLine, BarChart3, ShieldCheck, BookOpen, Landmark, ClipboardList, Users, Check, ChevronRight, Lock, HelpCircle, Heart, Shield, TrendingUp, Menu, X, ChevronDown, Facebook } from "lucide-react";
+import { motion, useInView, AnimatePresence, useReducedMotion } from "motion/react";
+import { Mail, Building2, PenLine, BarChart3, ShieldCheck, BookOpen, Landmark, ClipboardList, Users, Check, ChevronRight, Lock, HelpCircle, Heart, Shield, TrendingUp, Menu, X, ChevronDown, Facebook, BadgeCheck } from "lucide-react";
 import { InteractiveDashboard } from "./components/InteractiveDashboard";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "./components/ui/accordion";
 import imgLogoFull from "../assets/a65d01e22650a649bffd6b81718207659fb69d94.png";
 import imgRectangle5 from "../assets/0c7863a730a70d564f7f174eadec97b8e83a5295.png";
 import imgBanner from "../assets/05796020c94b6ec4f0869d691e82f08a72ca68e2.png";
@@ -30,19 +31,22 @@ function FadeUp({
   children,
   delay = 0,
   className = "",
+  distance = 32,
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  distance?: number;
 }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "0px" });
+  const shouldReduceMotion = useReducedMotion();
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 32 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.65, delay, ease: [0.16, 1, 0.3, 1] }}
+      initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: distance }}
+      animate={shouldReduceMotion ? { opacity: 1, y: 0 } : (inView ? { opacity: 1, y: 0 } : {})}
+      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.65, delay, ease: [0.16, 1, 0.3, 1] }}
       className={className}
     >
       {children}
@@ -61,6 +65,9 @@ const navLinks = [
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const firstLinkRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -73,8 +80,46 @@ function Nav() {
     if (menuOpen) setMenuOpen(false);
   }, [scrolled]);
 
+  // Active section via IntersectionObserver
+  useEffect(() => {
+    const sectionIds = ["who-benefits", "features", "pricing", "faq"];
+    const observers: IntersectionObserver[] = [];
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
+        { threshold: 0.4 }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+    return () => observers.forEach((obs) => obs.disconnect());
+  }, []);
+
+  // Escape key closes mobile menu and returns focus
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        hamburgerRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [menuOpen]);
+
+  // Move focus to first link when menu opens
+  useEffect(() => {
+    if (menuOpen) {
+      setTimeout(() => firstLinkRef.current?.focus(), 50);
+    }
+  }, [menuOpen]);
+
   function handleNavLink(id: string) {
     setMenuOpen(false);
+    hamburgerRef.current?.focus();
     scrollToSection(id);
   }
 
@@ -94,14 +139,18 @@ function Nav() {
 
         {/* Desktop links */}
         <div
-          className="hidden md:flex items-center gap-8 text-[14px] text-[#4a5a4a] font-medium"
+          className="hidden md:flex items-center gap-8 text-[14px] font-medium"
           style={DM}
         >
           {navLinks.map((link) => (
             <button
               key={link.label}
               onClick={() => scrollToSection(link.id)}
-              className="hover:text-[#1a6640] transition-colors duration-200 cursor-pointer bg-transparent border-none"
+              className={`transition-colors duration-200 cursor-pointer bg-transparent pb-0.5 ${
+                activeSection === link.id
+                  ? "text-[#1a6640] font-bold border-b-2 border-[#1a6640]"
+                  : "text-[#4a5a4a] hover:text-[#1a6640] border-b-2 border-transparent"
+              }`}
             >
               {link.label}
             </button>
@@ -111,9 +160,12 @@ function Nav() {
         <div className="flex items-center gap-3">
           {/* Hamburger — mobile only */}
           <button
+            ref={hamburgerRef}
             className="md:hidden flex items-center justify-center size-9 rounded-full hover:bg-[#eaf3e5] transition-colors duration-200 cursor-pointer text-[#1a6640]"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav-menu"
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -128,22 +180,30 @@ function Nav() {
       </div>
 
       {/* Mobile dropdown */}
-      {menuOpen && (
-        <div
-          className="md:hidden border-t border-[rgba(0,53,29,0.08)] bg-white/98 px-8 py-3 flex flex-col gap-1"
-          style={DM}
-        >
-          {navLinks.map((link) => (
-            <button
-              key={link.label}
-              onClick={() => handleNavLink(link.id)}
-              className="text-left text-[15px] text-[#4a5a4a] font-medium py-3 border-b border-[rgba(0,53,29,0.06)] last:border-0 hover:text-[#1a6640] transition-colors duration-200 cursor-pointer bg-transparent w-full"
-            >
-              {link.label}
-            </button>
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            id="mobile-nav-menu"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden border-t border-[rgba(0,53,29,0.08)] bg-white/98 px-8 py-3 flex flex-col gap-1"
+            style={DM}
+          >
+            {navLinks.map((link, index) => (
+              <button
+                ref={index === 0 ? firstLinkRef : undefined}
+                key={link.label}
+                onClick={() => handleNavLink(link.id)}
+                className="text-left text-[15px] text-[#4a5a4a] font-medium py-3 border-b border-[rgba(0,53,29,0.06)] last:border-0 hover:text-[#1a6640] transition-colors duration-200 cursor-pointer bg-transparent w-full"
+              >
+                {link.label}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
@@ -152,6 +212,15 @@ function Nav() {
 function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
+  const [showVideo, setShowVideo] = useState(true);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setShowVideo(!mq.matches);
+    const handler = (e: MediaQueryListEvent) => setShowVideo(!e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
     if (!glowRef.current || !sectionRef.current) return;
@@ -174,22 +243,43 @@ function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden snap-section flex items-end lg:items-center"
+      className="relative w-full overflow-hidden snap-section flex items-end lg:items-center bg-[#00351d]"
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Background video — looping, woman on right */}
-      <video
-        src={heroVideo}
-        autoPlay
-        muted
-        loop
-        playsInline
-        aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ objectPosition: "80% center" }}
+      {/* Gold accent line top */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[3px] z-10"
+        style={{ background: "linear-gradient(to right, transparent, #b8973a, transparent)" }}
       />
+      {/* Gold accent line bottom */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[3px] z-10"
+        style={{ background: "linear-gradient(to right, transparent, #b8973a, transparent)" }}
+      />
+      {/* Background video — looping, woman on right */}
+      {showVideo ? (
+        <video
+          src={heroVideo}
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={imgHero}
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: "80% center" }}
+        />
+      ) : (
+        <img
+          src={imgHero}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: "80% center" }}
+        />
+      )}
 
       {/* Green gradient overlay — solid on left, fades to transparent on right */}
       <div
@@ -505,6 +595,20 @@ function DashboardShowcase() {
         <FadeUp delay={0.15} className="w-full flex justify-center">
           <InteractiveDashboard />
         </FadeUp>
+        <FadeUp delay={0.3} className="mt-10 text-center">
+          <p className="text-[#4a5a4a] text-[15px] mb-4" style={DM}>
+            Like what you see?
+          </p>
+          <motion.button
+            whileHover={{ scale: 1.04, boxShadow: "0 16px 40px rgba(184,150,59,0.45)" }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ duration: 0.15 }}
+            className="bg-[#b8973a] text-white font-bold text-[15px] px-8 py-4 rounded-full shadow-[0_8px_30px_rgba(184,150,59,0.3)] hover:bg-[#a07e2e] transition-colors duration-200 cursor-pointer"
+            style={U}
+          >
+            Start Your Free Account
+          </motion.button>
+        </FadeUp>
       </div>
     </section>
   );
@@ -580,7 +684,7 @@ const modules = [
 
 function PlatformModules() {
   return (
-    <section id="features" className="bg-[#f6fbf3] w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow">
+    <section id="features" className="bg-white w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow">
       <div className="max-w-[1200px] mx-auto flex flex-col gap-12 items-center">
         <FadeUp className="text-center">
           <p className="text-[#b8973a] text-[12px] font-bold mb-3" style={U}>
@@ -685,12 +789,11 @@ function CinematicSection() {
         aria-hidden="true"
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
-      {/* Left-to-right green gradient overlay — matches hero */}
+      {/* Full-bleed vertical gradient overlay — distinct from hero */}
       <div
         className="absolute inset-0"
         style={{
-          background:
-            "linear-gradient(to right, #00351d 28%, rgba(0,53,29,0.85) 45%, rgba(0,53,29,0.2) 62%, transparent 78%)",
+          background: "linear-gradient(to bottom, rgba(0,53,29,0.92), rgba(0,53,29,0.75))",
         }}
       />
       {/* Gold accent line top */}
@@ -719,7 +822,7 @@ function CinematicSection() {
             className="text-[rgba(255,255,255,0.65)] text-[15px] lg:text-[17px] leading-[28px]"
             style={DM}
           >
-            StewardTrack is built for them.
+            <cite style={{ fontStyle: "normal" }}>StewardTrack is built for them.</cite>
           </p>
         </FadeUp>
       </div>
@@ -743,6 +846,7 @@ const steps = [
 function HowItWorks() {
   return (
     <section
+      id="how-it-works"
       className="w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow flex flex-col justify-center"
       style={{
         background: "linear-gradient(65deg, rgb(0,53,29) 13%, rgb(0,155,85) 103%)",
@@ -834,7 +938,9 @@ const testimonials = [
     initials: "M",
     color: "#1a6640",
     name: "Maria",
-    role: "Treasurer, Independent Bible Church · Quezon City",
+    church: "Independent Bible Church",
+    role: "Treasurer · Quezon City",
+    verified: true,
     quote:
       "For years I kept everything in notebooks. I was proud of my records — but I was also the only one who understood them. Now I can show the board exactly where every peso went, and I feel at peace knowing nothing can be lost.",
   },
@@ -842,7 +948,9 @@ const testimonials = [
     initials: "P",
     color: "#b8973a",
     name: "Pastor Jose",
-    role: "Full Gospel Church · Cebu City",
+    church: "Full Gospel Church",
+    role: "Pastor · Cebu City",
+    verified: true,
     quote:
       "I still enter every transaction myself — I want to. But now they're instantly safe and audit-ready. I can answer any question about God's money with confidence. That peace of mind is priceless.",
   },
@@ -850,7 +958,9 @@ const testimonials = [
     initials: "A",
     color: "#2e6b8a",
     name: "Ate Annie",
-    role: "Church Secretary · Community Baptist Church · General Santos City",
+    church: "Community Baptist Church",
+    role: "Church Secretary · General Santos City",
+    verified: true,
     quote:
       "Our annual financial report used to take me two weeks of digging through old notebooks. Now it takes one afternoon. StewardTrack didn't replace my work — it made my faithfulness more visible.",
   },
@@ -889,8 +999,12 @@ function Testimonials() {
                     {t.initials}
                   </div>
                   <div>
-                    <p className="text-[#181d18] text-[13px] font-bold" style={U}>
+                    <p className="text-[#181d18] text-[13px] font-bold flex items-center gap-1" style={U}>
                       {t.name}
+                      {t.verified && <BadgeCheck size={13} className="text-[#1a6640]" />}
+                    </p>
+                    <p className="text-[#1a6640] text-[11px] font-semibold" style={DM}>
+                      {t.church}
                     </p>
                     <p className="text-[#4a5a4a] text-[11px]" style={DM}>
                       {t.role}
@@ -997,8 +1111,25 @@ const plans = [
   },
 ];
 
+const comparisonRows: { feature: string; tiers: (boolean | string)[] }[] = [
+  { feature: "Members limit", tiers: ["25", "35", "150", "Unlimited"] },
+  { feature: "Member profiles & giving records", tiers: [true, true, true, true] },
+  { feature: "Basic communication tools", tiers: [true, true, true, true] },
+  { feature: "Financial management basics", tiers: [true, true, true, true] },
+  { feature: "AI-powered tools", tiers: [false, true, true, true] },
+  { feature: "Ministry Planner access", tiers: [false, true, true, true] },
+  { feature: "Advanced reports & exports", tiers: [false, true, true, true] },
+  { feature: "Online donations & events", tiers: [false, false, true, true] },
+  { feature: "Facebook & SMS campaigns", tiers: [false, false, true, true] },
+  { feature: "Full financial audit reports", tiers: [false, false, true, true] },
+  { feature: "Multi-campus support", tiers: [false, false, false, true] },
+  { feature: "Custom integrations", tiers: [false, false, false, true] },
+  { feature: "Priority support", tiers: [false, false, false, true] },
+];
+
 function Pricing() {
   const [annual, setAnnual] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
 
   return (
     <section id="pricing" className="bg-white w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow">
@@ -1020,8 +1151,10 @@ function Pricing() {
 
         {/* Billing toggle */}
         <FadeUp delay={0.1}>
-          <div className="flex items-center gap-1 bg-[#eaf3e5] p-1.5 rounded-full">
+          <div className="flex items-center gap-1 bg-[#eaf3e5] p-1.5 rounded-full" role="radiogroup" aria-label="Billing period">
             <button
+              role="radio"
+              aria-checked={!annual}
               onClick={() => setAnnual(false)}
               className={`px-5 py-2 rounded-full text-[13px] font-bold transition-all duration-200 cursor-pointer ${
                 !annual ? "bg-[#1a6640] text-white shadow-sm" : "text-[#4a5a4a] hover:text-[#1a6640]"
@@ -1031,6 +1164,8 @@ function Pricing() {
               Monthly
             </button>
             <button
+              role="radio"
+              aria-checked={annual}
               onClick={() => setAnnual(true)}
               className={`px-5 py-2 rounded-full text-[13px] font-bold transition-all duration-200 cursor-pointer flex items-center gap-2 ${
                 annual ? "bg-[#1a6640] text-white shadow-sm" : "text-[#4a5a4a] hover:text-[#1a6640]"
@@ -1045,7 +1180,7 @@ function Pricing() {
           </div>
         </FadeUp>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full items-stretch">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full items-stretch" id="pricing-cards">
           {plans.map((plan, i) => (
             <FadeUp key={plan.name} delay={i * 0.07} className="h-full">
               <motion.div
@@ -1141,46 +1276,109 @@ function Pricing() {
             </FadeUp>
           ))}
         </div>
+        {/* Compare features toggle */}
+        <FadeUp delay={0.2} className="w-full flex flex-col items-center gap-4">
+          <button
+            onClick={() => setShowComparison((v) => !v)}
+            className="flex items-center gap-2 text-[#1a6640] text-[13px] font-bold cursor-pointer bg-transparent hover:text-[#009b55] transition-colors duration-200"
+            style={U}
+          >
+            {showComparison ? "Hide feature comparison" : "Compare all features"}
+            <ChevronDown
+              size={14}
+              className={`transition-transform duration-300 ${showComparison ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          <AnimatePresence>
+            {showComparison && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full overflow-hidden"
+              >
+                <div className="overflow-x-auto rounded-[16px] border border-[rgba(0,53,29,0.08)] bg-white shadow-[0_2px_12px_rgba(0,51,26,0.04)]">
+                  <table className="w-full min-w-[600px] border-collapse text-[12px]" style={DM}>
+                    <thead>
+                      <tr className="border-b border-[rgba(0,53,29,0.08)]">
+                        <th className="text-left px-5 py-3 text-[#4a5a4a] font-semibold w-[200px]">Feature</th>
+                        {plans.map((plan) => (
+                          <th key={plan.name} className="px-4 py-3 text-center font-extrabold text-[11px]"
+                            style={{ color: plan.featured ? "#00351d" : "#4a5a4a", fontFamily: "Urbanist, sans-serif" }}>
+                            {plan.name}
+                            {plan.featured && (
+                              <span className="ml-1.5 bg-[#b8973a] text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">★</span>
+                            )}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {comparisonRows.map((row, i) => (
+                        <tr key={row.feature} className={`border-b border-[rgba(0,53,29,0.05)] ${i % 2 === 0 ? "bg-white" : "bg-[#f6fbf3]"}`}>
+                          <td className="px-5 py-2.5 text-[#4a5a4a]">{row.feature}</td>
+                          {row.tiers.map((val, ti) => (
+                            <td key={ti} className="px-4 py-2.5 text-center">
+                              {typeof val === "string" ? (
+                                <span className="text-[#00351d] font-bold">{val}</span>
+                              ) : val ? (
+                                <Check size={13} className="text-[#1a6640] mx-auto" />
+                              ) : (
+                                <span className="text-[rgba(0,0,0,0.18)] text-[16px] leading-none">—</span>
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </FadeUp>
       </div>
     </section>
   );
 }
 
-// ─── Trust / Fear ─────────────────────────────────────────────────────────────
+// ─── Trust / FAQ ──────────────────────────────────────────────────────────────
 const fears = [
   {
     icon: Lock,
-    title: "Losing Control",
+    title: "Will I lose control of my church's data?",
     ans: "Everything stays in your hands. You enter every transaction. Download all your data anytime — it belongs to you, not us.",
   },
   {
     icon: HelpCircle,
-    title: "Not Understanding the System",
+    title: "What if I don't understand how to use it?",
     ans: "We speak Filipino. No tech jargon. Simple interface. Our support team has helped churches exactly like yours.",
   },
   {
     icon: Heart,
-    title: "Being Replaced",
+    title: "Is StewardTrack trying to replace me?",
     ans: "We're not here to replace you. StewardTrack frees you from tedious repetition so you can focus on what truly matters.",
   },
   {
     icon: Shield,
-    title: "Data Security",
+    title: "How secure is my church's data?",
     ans: "Bank-level encryption. Daily automatic backups. More secure than any filing cabinet or external drive.",
   },
   {
     icon: Building2,
-    title: "Company Disappearing",
+    title: "What if StewardTrack shuts down someday?",
     ans: "We're Filipinos serving Filipino churches. Not VC-backed. Sustainable and committed to your church long-term.",
   },
   {
     icon: TrendingUp,
-    title: "Looking Less Capable",
+    title: "Will I look less capable by using software?",
     ans: "You'll look MORE prepared. Better reports. Instant answers. Your board will see you as more in control, not less.",
   },
   {
     icon: BookOpen,
-    title: "I'm Used to My Notebook",
+    title: "I'm used to my notebook — why would I switch?",
     ans: "Good — that means you already know how to be faithful with records. StewardTrack is just your notebook, but one that never gets lost, adds up automatically, and is always ready for audit.",
   },
 ];
@@ -1188,7 +1386,7 @@ const fears = [
 function TrustSection() {
   return (
     <section id="faq" className="bg-[#eaf3e5] w-full py-14 lg:py-20 px-6 sm:px-10 lg:px-16 xl:px-24 snap-section-overflow">
-      <div className="max-w-[1200px] mx-auto flex flex-col gap-12 items-center">
+      <div className="max-w-[740px] mx-auto flex flex-col gap-10 items-center">
         <FadeUp className="text-center">
           <p className="text-[#b8973a] text-[12px] font-bold mb-3" style={U}>
             — Your Concerns, Answered
@@ -1197,35 +1395,37 @@ function TrustSection() {
             className="text-[#1a6640] font-extrabold text-[28px] lg:text-[40px] tracking-[-0.4px] lg:tracking-[-0.6px] leading-[1.2]"
             style={U}
           >
-            Your Deepest Fears, Directly Addressed
+            Frequently Asked Questions
           </h2>
         </FadeUp>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full items-stretch">
-          {fears.map((fear, i) => (
-            <FadeUp
-              key={fear.title}
-              delay={i * 0.07}
-              className={i === fears.length - 1 && fears.length % 3 === 1 ? "lg:col-start-2 h-full" : "h-full"}
-            >
-              <motion.div
-                whileHover={{ y: -4, boxShadow: "0 12px 36px rgba(0,51,26,0.1)" }}
-                transition={{ duration: 0.2 }}
-                className="bg-white rounded-[20px] shadow-[0_2px_12px_rgba(0,51,26,0.05)] p-6 flex flex-col gap-3 h-full"
+        <FadeUp className="w-full">
+          <Accordion type="single" collapsible className="w-full flex flex-col gap-3">
+            {fears.map((fear, i) => (
+              <AccordionItem
+                key={fear.title}
+                value={`item-${i}`}
+                className="bg-white rounded-[16px] shadow-[0_2px_12px_rgba(0,51,26,0.05)] px-5 border-none"
               >
-                <div className="bg-[#e8f4ed] rounded-[10px] size-11 flex items-center justify-center">
-                  <fear.icon size={20} className="text-[#1a6640]" />
-                </div>
-                <p className="text-[#00351d] font-bold text-[15px]" style={U}>
-                  {fear.title}
-                </p>
-                <p className="text-[#4a5a4a] text-[13px] leading-[20px]" style={DM}>
-                  {fear.ans}
-                </p>
-              </motion.div>
-            </FadeUp>
-          ))}
-        </div>
+                <AccordionTrigger className="hover:no-underline py-4 gap-4 [&[data-state=open]>svg]:rotate-180">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="bg-[#e8f4ed] rounded-[8px] size-9 shrink-0 flex items-center justify-center">
+                      <fear.icon size={16} className="text-[#1a6640]" />
+                    </div>
+                    <span className="text-[#00351d] font-bold text-[15px] text-left" style={U}>
+                      {fear.title}
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pl-[48px] pb-5">
+                  <p className="text-[#4a5a4a] text-[13px] leading-[20px]" style={DM}>
+                    {fear.ans}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </FadeUp>
       </div>
     </section>
   );
@@ -1278,32 +1478,71 @@ function FinalCta() {
 // ─── Footer ───────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="bg-[#0c2115] w-full px-6 sm:px-10 lg:px-16 xl:px-24 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 snap-section-overflow">
-      <img src={imgLogoFull1} alt="StewardTrack" className="h-5 w-auto object-contain" />
+    <footer className="bg-[#0c2115] w-full px-6 sm:px-10 lg:px-16 xl:px-24 pt-10 pb-6 snap-section-overflow">
+      <div className="max-w-[1200px] mx-auto">
+        {/* 3-column grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+          {/* Col 1: Logo + tagline + social */}
+          <div className="flex flex-col gap-3">
+            <img src={imgLogoFull1} alt="StewardTrack" className="h-5 w-auto object-contain self-start" />
+            <p className="text-[rgba(255,255,255,0.5)] text-[12px] leading-[18px]" style={DM}>
+              Built for Filipino churches.<br />Simple, secure, and faithful.
+            </p>
+            <a
+              href="https://facebook.com/stewardtrack"
+              aria-label="StewardTrack on Facebook"
+              className="text-[rgba(255,255,255,0.55)] hover:text-white transition-colors duration-200 flex items-center w-fit"
+            >
+              <Facebook size={14} />
+            </a>
+          </div>
 
-      <p className="text-[rgba(255,255,255,0.55)] text-[12px] order-last sm:order-none" style={DM}>
-        © 2026 StewardTrack. All rights reserved.
-      </p>
+          {/* Col 2: Product links */}
+          <div className="flex flex-col gap-2">
+            <p className="text-[rgba(255,255,255,0.4)] text-[10px] font-bold uppercase tracking-[0.1em] mb-1" style={U}>Product</p>
+            {[
+              { label: "Pricing", id: "pricing" },
+              { label: "Features", id: "features" },
+              { label: "How It Works", id: "how-it-works" },
+              { label: "FAQ", id: "faq" },
+            ].map((l) => (
+              <button
+                key={l.label}
+                onClick={() => scrollToSection(l.id)}
+                className="text-left text-[rgba(255,255,255,0.55)] text-[12px] hover:text-white transition-colors duration-200 bg-transparent cursor-pointer w-fit"
+                style={DM}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
 
-      <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-[rgba(255,255,255,0.55)] text-[12px]" style={DM}>
-        {[
-          { label: "Docs", href: "https://docs.stewardtrack.com" },
-          { label: "About", href: "#" },
-          { label: "Contact", href: "mailto:hello@stewardtrack.com" },
-          { label: "Privacy", href: "#" },
-          { label: "Terms", href: "#" },
-        ].map((l) => (
-          <a key={l.label} href={l.href} className="hover:text-white transition-colors duration-200">
-            {l.label}
-          </a>
-        ))}
-        <a
-          href="https://facebook.com/stewardtrack"
-          aria-label="StewardTrack on Facebook"
-          className="hover:text-white transition-colors duration-200 flex items-center"
-        >
-          <Facebook size={13} />
-        </a>
+          {/* Col 3: Company links */}
+          <div className="flex flex-col gap-2">
+            <p className="text-[rgba(255,255,255,0.4)] text-[10px] font-bold uppercase tracking-[0.1em] mb-1" style={U}>Company</p>
+            {[
+              { label: "About", href: "#" },
+              { label: "Contact", href: "mailto:hello@stewardtrack.com" },
+              { label: "Docs", href: "https://docs.stewardtrack.com" },
+              { label: "Privacy", href: "#" },
+              { label: "Terms", href: "#" },
+            ].map((l) => (
+              <a key={l.label} href={l.href} className="text-[rgba(255,255,255,0.55)] text-[12px] hover:text-white transition-colors duration-200" style={DM}>
+                {l.label}
+              </a>
+            ))}
+            <p className="text-[rgba(255,255,255,0.35)] text-[11px] mt-2" style={DM}>
+              🇵🇭 Proudly Filipino-made
+            </p>
+          </div>
+        </div>
+
+        {/* Divider + copyright */}
+        <div className="border-t border-[rgba(255,255,255,0.08)] pt-5">
+          <p className="text-[rgba(255,255,255,0.35)] text-[12px] text-center" style={DM}>
+            © 2026 StewardTrack. All rights reserved.
+          </p>
+        </div>
       </div>
     </footer>
   );

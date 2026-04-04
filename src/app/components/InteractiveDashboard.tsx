@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { LayoutDashboard, Users, Landmark, FileText, ClipboardList, Settings } from "lucide-react";
 
 type Tab =
   | "overview" | "giving" | "members"
@@ -223,10 +224,11 @@ const tabData: Record<Tab, TabData> = {
   },
 };
 
-const sidebarNav = [
-  { section: "COMMUNITY",   items: ["Dashboard", "Families"] },
-  { section: "STEWARDSHIP", items: ["Treasury Overview", "Financial Records", "Ministry Budgets"] },
-  { section: "SETTINGS",    items: ["Settings"] },
+type SidebarItem = { label: string; icon: React.ComponentType<{ size?: number; className?: string }> };
+const sidebarNav: { section: string; items: SidebarItem[] }[] = [
+  { section: "COMMUNITY",   items: [{ label: "Dashboard", icon: LayoutDashboard }, { label: "Families", icon: Users }] },
+  { section: "STEWARDSHIP", items: [{ label: "Treasury Overview", icon: Landmark }, { label: "Financial Records", icon: FileText }, { label: "Ministry Budgets", icon: ClipboardList }] },
+  { section: "SETTINGS",    items: [{ label: "Settings", icon: Settings }] },
 ];
 
 // Sidebar item → tab mapping
@@ -802,21 +804,22 @@ function AppSidebar({
             >
               {group.section}
             </p>
-            {group.items.map((item) => {
+            {group.items.map(({ label, icon: Icon }) => {
               // "Dashboard" is active only when sidebarSection is COMMUNITY
               const isActuallyActive =
-                item === activeItem &&
-                (item !== "Dashboard" || activeSection === "COMMUNITY");
-              const tab = itemToTab[item];
+                label === activeItem &&
+                (label !== "Dashboard" || activeSection === "COMMUNITY");
+              const tab = itemToTab[label];
               // Special-case: COMMUNITY > Dashboard maps to "members"
               const resolvedTab: Tab | undefined =
-                item === "Dashboard" && group.section === "COMMUNITY"
+                label === "Dashboard" && group.section === "COMMUNITY"
                   ? "members"
                   : tab;
               return (
                 <button
-                  key={group.section + item}
+                  key={group.section + label}
                   onClick={() => resolvedTab && onTabClick(resolvedTab)}
+                  aria-current={isActuallyActive ? "page" : undefined}
                   className={`w-full text-left px-2 py-1.5 rounded-lg text-[10px] font-medium transition-all duration-200 flex items-center gap-1.5 ${
                     isActuallyActive
                       ? "bg-[rgba(255,255,255,0.12)] text-white font-bold"
@@ -824,10 +827,11 @@ function AppSidebar({
                   } ${resolvedTab ? "cursor-pointer" : "cursor-default"}`}
                   style={{ fontFamily: "DM Sans, sans-serif" }}
                 >
+                  <Icon size={10} className="shrink-0" />
+                  {label}
                   {isActuallyActive && (
-                    <div className="w-1.5 h-1.5 bg-[#28c840] rounded-full shrink-0" />
+                    <div className="w-1.5 h-1.5 bg-[#28c840] rounded-full shrink-0 ml-auto" />
                   )}
-                  {item}
                 </button>
               );
             })}
@@ -1232,12 +1236,14 @@ export function InteractiveDashboard() {
   const [isMobileView, setIsMobileView] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   const data = tabData[activeTab];
 
   // Direct DOM mutation on mousemove — no React re-render, no stutter
+  // Skip tilt when user prefers reduced motion
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || shouldReduceMotion) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -1245,17 +1251,17 @@ export function InteractiveDashboard() {
     if (glowRef.current) {
       glowRef.current.style.background = `radial-gradient(ellipse at ${50 + x * 80}% ${50 + y * 80}%, rgba(26,102,64,0.07) 0%, transparent 65%)`;
     }
-  }, []);
+  }, [shouldReduceMotion]);
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
-    if (cardRef.current) {
+    if (cardRef.current && !shouldReduceMotion) {
       cardRef.current.style.transition = "transform 0.08s linear";
     }
     if (glowRef.current) {
       glowRef.current.style.opacity = "1";
     }
-  }, []);
+  }, [shouldReduceMotion]);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
